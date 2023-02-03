@@ -1,6 +1,8 @@
 # Dumpcs2Protobuf
 some shit i tried to make to extract the obfuscated protobuf messages from dump.cs file (needs to set manually the repetitive string that comes after the class name)
 
+# YOU WILL NEED A FULL DUMP.CS FILE CONTAINING 100% FULL DUMP (INCLUDING ALL FULL FIELDS AND VALUES) ELSE IT WONT WORK
+
 
 # USAGE
 
