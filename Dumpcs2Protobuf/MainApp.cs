@@ -1,76 +1,77 @@
-﻿using System;
-using System.IO;
-using System.Text;
+    using System;
+    using System.IO;
+    using System.Text;
 
-namespace DumpFileParser
-{
-    class Program
+    namespace DumpFileParser
     {
-        static void Main(string[] args)
+        class Program
         {
-            string fileName = "dump.cs";
-            string searchString = "PGMFAMBHGBO";
-            string outputFolder = "output";
-
-            if (!File.Exists(fileName))
+            static void Main(string[] args)
             {
-                Console.WriteLine($"File '{fileName}' not found.");
-                return;
-            }
+                string fileName = "dump.cs";
+                string searchString = "CKGMNELNBGB";
+                string outputFolder = "output";
 
-            if (!Directory.Exists(outputFolder))
-            {
-                Directory.CreateDirectory(outputFolder);
-            }
-
-            string[] lines = File.ReadAllLines(fileName);
-            bool classStarted = false;
-            StreamWriter outputFile = null;
-
-            try
-            {
-                for (int i = 0; i < lines.Length; i++)
+                if (!File.Exists(fileName))
                 {
-                    string line = lines[i].Trim();
+                    Console.WriteLine($"File '{fileName}' not found.");
+                    return;
+                }
 
-                    if (line.Contains(searchString) && line.Contains("public sealed class"))
+                if (!Directory.Exists(outputFolder))
+                {
+                    Directory.CreateDirectory(outputFolder);
+                }
+
+                string[] lines = File.ReadAllLines(fileName);
+                bool classStarted = false;
+                StreamWriter outputFile = null;
+
+                try
+                {
+                    for (int i = 0; i < lines.Length; i++)
                     {
+                        string line = lines[i].Trim();
+
+                        if (line.Contains(searchString) && line.Contains("public sealed class"))
+                        {
+                            if (classStarted)
+                            {
+                                outputFile.WriteLine("}");
+                                outputFile.Close();
+                            }
+
+                            classStarted = true;
+                            string[] parts = line.Split(' ');
+                            string className = parts[3];
+                            outputFile = new StreamWriter($"{outputFolder}/{className}.cs");
+                            continue;
+                        }
+
                         if (classStarted)
                         {
-                            outputFile.WriteLine("}");
-                            outputFile.Close();
-                        }
-
-                        classStarted = true;
-                        string[] parts = line.Split(' ');
-                        string className = parts[3];
-                        outputFile = new StreamWriter($"{outputFolder}/{className}.cs");
-                    }
-
-                    if (classStarted)
-                    {
-                        if (line.Contains("// Properties:"))
-                        {
-                            classStarted = false;
-                            outputFile.WriteLine("}");
-                            outputFile.Close();
-                        }
-                        else
-                        {
-                            outputFile.WriteLine(line);
+                            if (line.Contains("// Properties"))
+                            {
+                                classStarted = false;
+                                outputFile.WriteLine("}");
+                                outputFile.Close();
+                            }
+                            else
+                            {
+                                outputFile.WriteLine(line);
+                            }
                         }
                     }
                 }
-            }
-            finally
-            {
-                if (outputFile != null)
+                finally
                 {
-                    outputFile.Close();
+                    if (outputFile != null)
+                    {
+                        outputFile.Close();
+                    }
                 }
-            }
 
-            Console.WriteLine("File parsing completed.");
+                Console.WriteLine("File parsing completed.");
+            }
         }
     }
-}
