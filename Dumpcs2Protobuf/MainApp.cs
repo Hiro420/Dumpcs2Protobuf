@@ -29,39 +29,60 @@
 
                 try
                 {
-                    for (int i = 0; i < lines.Length; i++)
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i].Trim();
+
+                    if (line.Contains(searchString) && line.Contains("public sealed class"))
                     {
-                        string line = lines[i].Trim();
-
-                        if (line.Contains(searchString) && line.Contains("public sealed class"))
-                        {
-                            if (classStarted)
-                            {
-                                outputFile.WriteLine("}");
-                                outputFile.Close();
-                            }
-
-                            classStarted = true;
-                            string[] parts = line.Split(' ');
-                            string className = parts[3];
-                            outputFile = new StreamWriter($"{outputFolder}/{className}.cs");
-                            continue;
-                        }
-
                         if (classStarted)
                         {
-                            if (line.Contains("// Properties"))
+                            outputFile.WriteLine("}");
+                            outputFile.Close();
+                        }
+
+                        classStarted = true;
+                        string[] parts = line.Split(' ');
+                        string className = parts[3];
+                        Console.WriteLine($"Dumping {className}");
+                        outputFile = new StreamWriter($"{outputFolder}/{className}.cs");
+                        continue;
+                    }
+
+                    if (classStarted)
+                    {
+                        if (line.Contains("// Constructors") || (line.Contains("// Methods")))
+                        {
+                            classStarted = false;
+                            outputFile.WriteLine("}");
+                            outputFile.Close();
+                        }
+                        else
+                        {
+                            if (line.Contains("DebuggerNonUserCodeAttribute") || (line.StartsWith("public override") || (line.StartsWith("public static")) || (line.StartsWith("private")) || (line.Contains("// Properties"))))
                             {
-                                classStarted = false;
-                                outputFile.WriteLine("}");
-                                outputFile.Close();
+                                continue;
                             }
                             else
                             {
-                                outputFile.WriteLine(line);
+                                if (line.Contains(" { get; set; }"))
+                                {
+                                    line = line.Replace(" { get; set; }", "");
+                                    outputFile.WriteLine(line);
+                                }
+                                else if (line.Contains(" { get; }"))
+                                {
+                                    line = line.Replace(" { get; }", "");
+                                    outputFile.WriteLine(line);
+                                }
+                                else
+                                {
+                                    outputFile.WriteLine(line);
+                                }
                             }
                         }
                     }
+                }
                 }
                 finally
                 {
