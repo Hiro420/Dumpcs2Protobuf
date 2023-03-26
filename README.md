@@ -20,7 +20,7 @@ some shit i tried to make to extract the obfuscated protobuf messages from dump.
 and a `defs` folder containing ***SOME*** protos. please remember, this tool isnt perfect and may not parse all of them perfectly\
 ![image](https://user-images.githubusercontent.com/84511935/227778873-0c40ea86-3dae-4214-8614-52cf15677eed.png)
 
-5- profit
+6- profit
 
 # I WILL NOT GUIDE YOU ON HOW TO DEOBFUSCATE PROTOS, YOU CAN DO IT USING TOOLS OR MANUALLY IF YOU'RE CRAZY ENOUGH
 
