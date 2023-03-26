@@ -17,7 +17,7 @@ some shit i tried to make to extract the obfuscated protobuf messages from dump.
 5- you will be left with an `output` folder, containing the protobuf messages as `.cs` files, looking like this:\
 ![image](https://user-images.githubusercontent.com/84511935/227775430-5f95f1bd-c4ce-45c8-824a-7bdd2ce2b9b7.png)
 
-and a `defs` folder containing ***SOME*** protos. please remember, this tool isnt perfect and may not parse all of them perfectly
+and a `defs` folder containing ***SOME*** protos. please remember, this tool isnt perfect and may not parse all of them perfectly\
 ![image](https://user-images.githubusercontent.com/84511935/227778873-0c40ea86-3dae-4214-8614-52cf15677eed.png)
 
 9- profit
