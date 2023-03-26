@@ -73,7 +73,7 @@ namespace DumpFileParser
                         else if (line.StartsWith("public") && !line.Contains("const"))
                         {
                             string[] fullstr = line.TrimEnd(';').Split(' ');
-                            if (fullstr[1].Contains("HGEDNJFDKFL") || (fullstr[1].Contains("NBBGAPIFGPL"))) //readonly
+                            if (fullstr[1].Contains("HGEDNJFDKFL") || (fullstr[1].Contains("NBBGAPIFGPL")) || (fullstr[1].Contains("LGGGCDCAKLP"))) //readonly
                             {
                                 Match match = readonly_extractor.Match(line.TrimEnd(';'));
                                 string field = match.Groups[1].Value;
