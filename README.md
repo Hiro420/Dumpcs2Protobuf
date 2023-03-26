@@ -22,6 +22,8 @@ and a `defs` folder containing ***SOME*** protos. please remember, this tool isn
 
 5- profit
 
+# I WILL NOT GUIDE YOU ON HOW TO DEOBFUSCATE IT, YOU CAN DO IT USING TOOLS OR MANUALLY IF YOU'RE CRAZY ENOUGH
+
 
 # KNOWN ISSUES:
 
