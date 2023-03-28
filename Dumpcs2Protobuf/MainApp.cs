@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
 namespace DumpFileParser
-    {
+{
     public class MyClass
     {
         static Regex readonly_extractor = new Regex("<(.*?)>");
@@ -14,6 +14,7 @@ namespace DumpFileParser
 
         static string parseType(string type, List<string> importList)
         {
+            type = type.Trim(' ');
             switch (type)
             {
                 case "int":
@@ -73,23 +74,47 @@ namespace DumpFileParser
                         else if (line.StartsWith("public") && !line.Contains("const"))
                         {
                             string[] fullstr = line.TrimEnd(';').Split(' ');
-                            if (fullstr[1].Contains("HGEDNJFDKFL") || (fullstr[1].Contains("NBBGAPIFGPL")) || (fullstr[1].Contains("LGGGCDCAKLP"))) //readonly
+                            if (fullstr[1].Contains("HGEDNJFDKFL") || (fullstr[1].Contains("NBBGAPIFGPL")) || (fullstr[1].Contains("LGGGCDCAKLP")) || (fullstr[1].Contains("LPHGCDAMKAB"))) //readonly
                             {
                                 Match match = readonly_extractor.Match(line.TrimEnd(';'));
                                 string field = match.Groups[1].Value;
                                 if (field.Contains(","))
                                 {
                                     string[] mapData = field.Split(',');
-                                    final.Add($"\tmap<{parseType(mapData[0], imports)}, {parseType(mapData[1], imports)}> {fullstr[4]} = {field_nums[f_counter]};");
+                                    try
+                                    {
+                                        string s = (mapData[0]);
+                                        string se = (mapData[1]);
+                                        Regex r = new Regex("int|uint|long|ulong|bool|string|double|float|ADGGCNMABEF");
+                                        if (r.IsMatch(s) && (r.IsMatch(se)))
+                                        {
+                                            //Console.WriteLine($"DEBUG: \tmap<{parseType(s, imports)}, {parseType(se, imports)}> {fullstr[3]} = {field_nums[f_counter].Trim(' ')}; ");
+                                            final.Add($"\tmap<{parseType(s, imports)}, {parseType(mapData[1], imports)}> {fullstr[3]} = {field_nums[f_counter].Trim(' ')};");
+                                        }
+                                        else if (r.IsMatch(s) && !(r.IsMatch(se)))
+                                        {
+                                            final.Add($"\tmap<{parseType(s, imports)}, {parseType(se, imports)}> {fullstr[3]} = {field_nums[f_counter].Trim(' ')};");
+                                        }
+                                        else
+                                        {
+                                            final.Add($"\tmap<{parseType(mapData[0], imports)}, {parseType(mapData[1], imports)}> {fullstr[4]} = {field_nums[f_counter].Trim(' ')};");
+                                        }
+                                        //final.Add($"\tmap<{parseType(mapData[0], imports)}, {parseType(mapData[1], imports)}> {fullstr[4]} = {field_nums[f_counter]};");
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine(e.Message);
+                                        continue;
+                                    }
                                 }
                                 else
                                 {
-                                    final.Add($"\trepeated {parseType(field, imports)} {fullstr[2]} = {field_nums[f_counter]};");
+                                    final.Add($"\trepeated {parseType(field, imports)} {fullstr[2]} = {field_nums[f_counter].Trim(' ')};");
                                 }
                             }
                             else
                             {
-                                final.Add($"\t{parseType(fullstr[1], imports)} {fullstr[2]} = {field_nums[f_counter]};");
+                                final.Add($"\t{parseType(fullstr[1], imports)} {fullstr[2]} = {field_nums[f_counter].Trim(' ')};");
                             }
                             f_counter++;
                         }
@@ -165,7 +190,7 @@ namespace DumpFileParser
                         }
                         else
                         {
-                            if (line.Contains("DebuggerNonUserCodeAttribute") || (line.StartsWith("public override") || (line.StartsWith("public static")) || (line.StartsWith("private")) || (line.Contains("// Properties"))))
+                            if (line.Contains("DebuggerNonUserCodeAttribute") || (line.StartsWith("public override") || (line.StartsWith("public static")) || (line.StartsWith("private")) || (line.Contains("// Properties")) || (line.Contains("."))))
                             {
                                 continue;
                             }
@@ -210,7 +235,7 @@ namespace DumpFileParser
 
             dump(outputDir, defsDir);
 
-            Console.WriteLine(string.Join(", ", global_imports));
+            //Console.WriteLine(string.Join(", ", global_imports));
         }
     }
 
