@@ -27,7 +27,5 @@ and a `defs` folder containing ***SOME*** protos. please remember, this tool isn
 
 # KNOWN ISSUES:
 
-- some maps may not be parsed correctly
-
-- oneof's are not working
+- oneof's are not being parsed
 
