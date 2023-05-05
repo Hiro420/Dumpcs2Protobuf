@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace DumpFileParser
 {
-    public class MyClass
+    public class Dumper
     {
         static Regex readonly_extractor = new Regex("<(.*?)>");
 
@@ -33,7 +33,7 @@ namespace DumpFileParser
                     return "double";
                 case "float":
                     return "float";
-                case "ADGGCNMABEF": // Google.Protobuf.ByteString beebyte
+                case "ByteString": // Google.Protobuf.ByteString beebyte
                     return "bytes";
                 default:
                     if (!importList.Contains($"import \"{type}.proto\";"))
@@ -47,6 +47,23 @@ namespace DumpFileParser
                     return type;
             }
         }
+        static void Polish(string folderPath)
+        {
+
+            string[] files = Directory.GetFiles(folderPath);
+
+            foreach (string file in files)
+            {
+                string contents = File.ReadAllText(file);
+
+                contents = contents.Replace("\r\n\r\n", "\r\n").Replace("\n\n", "\n");
+                contents = contents.Replace(";\r\nmessage", ";\n\nmessage");
+
+                File.WriteAllText(file, contents);
+
+                Console.WriteLine($"Done {file}!");
+            }
+        }
 
         static void dump(string folder, string output_dir)
         {
@@ -56,7 +73,7 @@ namespace DumpFileParser
                 {
                     Console.WriteLine($"parsing {file} to proto...");
                     string proto_name = Path.GetFileNameWithoutExtension(file);
-                    string header = "syntax = \"proto3\";\n\noption java_package = \"emu.grasscutter.net.proto\";\n";
+                    string header = "syntax = \"proto3\";\n";
                     List<string> final = new List<string>();
                     int fn_counter = 0;
                     int f_counter = 0;
@@ -74,7 +91,7 @@ namespace DumpFileParser
                         else if (line.StartsWith("public") && !line.Contains("const"))
                         {
                             string[] fullstr = line.TrimEnd(';').Split(' ');
-                            if (fullstr[1].Contains("HGEDNJFDKFL") || (fullstr[1].Contains("NBBGAPIFGPL")) || (fullstr[1].Contains("LGGGCDCAKLP")) || (fullstr[1].Contains("LPHGCDAMKAB"))) //readonly
+                            if (fullstr[1].Contains("readonly") || fullstr[1].Contains("RepeatedField")) //readonly
                             {
                                 Match match = readonly_extractor.Match(line.TrimEnd(';'));
                                 string field = match.Groups[1].Value;
@@ -85,7 +102,7 @@ namespace DumpFileParser
                                     {
                                         string s = (mapData[0]);
                                         string se = (mapData[1]);
-                                        Regex r = new Regex("int|uint|long|ulong|bool|string|double|float|ADGGCNMABEF");
+                                        Regex r = new Regex("int|uint|long|ulong|bool|string|double|float|ByteString");
                                         if (r.IsMatch(s) && (r.IsMatch(se)))
                                         {
                                             //Console.WriteLine($"DEBUG: \tmap<{parseType(s, imports)}, {parseType(se, imports)}> {fullstr[3]} = {field_nums[f_counter].Trim(' ')}; ");
@@ -140,7 +157,7 @@ namespace DumpFileParser
         static void Main(string[] args)
         {
             string fileName = "dump.cs";
-            string searchString = "CKGMNELNBGB";
+            string searchString = "IMessage";
             string outputFolder = "output";
 
             if (!File.Exists(fileName))
@@ -234,6 +251,7 @@ namespace DumpFileParser
             }
 
             dump(outputDir, defsDir);
+            Polish(defsDir);
 
             //Console.WriteLine(string.Join(", ", global_imports));
         }
