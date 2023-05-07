@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DumpFileParser
 {
@@ -35,7 +36,20 @@ namespace DumpFileParser
                     return "float";
                 case "ByteString": // Google.Protobuf.ByteString beebyte
                     return "bytes";
+                case "MapField":
+                    return "map";
                 default:
+                    if (type.Contains("<"))
+                    {
+                        var t = type.IndexOf('<');
+                        var lst = new List<string>();
+                        foreach (var genParam in type.Substring(t + 1, type.Length - t - 2).Split(new char[]{',', ' '}, StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            lst.Add(parseType(genParam, importList));
+                        }
+
+                        return $"{parseType(type.Substring(0, t), importList)}<{string.Join(", ", lst)}>";
+                    }
                     if (!importList.Contains($"import \"{type}.proto\";"))
                     {
                         if (!global_imports.Contains(type))
@@ -65,8 +79,10 @@ namespace DumpFileParser
             }
         }
 
-        static void dump(string folder, string output_dir)
+        static HashSet<string> dump(string folder, string output_dir)
         {
+            var result = new HashSet<string>();
+            
             foreach (string file in Directory.GetFiles(folder))
             {
                 try
@@ -91,6 +107,12 @@ namespace DumpFileParser
                         else if (line.StartsWith("public") && !line.Contains("const"))
                         {
                             string[] fullstr = line.TrimEnd(';').Split(' ');
+                            fullstr = new string[]
+                            {
+                                fullstr.First(),
+                                string.Join(" ", fullstr.Skip(1).Reverse().Skip(1).Reverse()),
+                                fullstr.Last()
+                            };
                             if (fullstr[1].Contains("readonly") || fullstr[1].Contains("RepeatedField")) //readonly
                             {
                                 Match match = readonly_extractor.Match(line.TrimEnd(';'));
@@ -146,12 +168,16 @@ namespace DumpFileParser
                     final.Add("}");
 
                     File.WriteAllLines($"{output_dir}\\{proto_name}.proto", final);
+
+                    result.UnionWith(imports.Select(x => x.Substring(8, x.Length - 16)));
                 }
                 catch (Exception E)
                 {
                     Console.WriteLine($"Error while parsing {file} ({E})");
                 }
             }
+
+            return result;
         }
 
         static void Main(string[] args)
@@ -240,6 +266,54 @@ namespace DumpFileParser
                 }
             }
 
+
+            var enums = new Dictionary<string, string>();
+
+            var sb = new StringBuilder();
+
+            var memberDefined = new HashSet<string>();
+
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i].Trim();
+
+                if (!line.StartsWith("public enum ")) continue;
+
+                sb.Clear();
+                
+                var name = line.Split(' ')[2];
+
+                sb.Append($@"syntax = ""proto3"";
+
+enum {name}
+{{
+");
+                var searcher = $"\tpublic const {name} ";
+
+                Console.WriteLine($"Dumping enum {name}");
+                
+                while (i < lines.Length && lines[i] != "}")
+                {
+                    if (lines[i].StartsWith(searcher))
+                    {
+                        var val = lines[i].Substring(searcher.Length);
+                        var t = val.Split(' ')[0];
+                        var t0 = t;
+                        while (memberDefined.Contains(t)) t = $"{name}_{t}";
+                        val = val.Replace(t0, t);
+                        memberDefined.Add(t);
+                        sb.AppendLine(val);
+                    }
+                    ++i;
+                }
+
+                sb.AppendLine("}");
+
+                enums[name] = sb.ToString();
+            }
+
+
             Console.WriteLine("File parsing completed.");
 
             string outputDir = ".\\output";
@@ -250,7 +324,12 @@ namespace DumpFileParser
                 Directory.CreateDirectory(defsDir);
             }
 
-            dump(outputDir, defsDir);
+            var usedTypes = dump(outputDir, defsDir);
+
+            foreach (var @enum in usedTypes)
+                if (enums.TryGetValue(@enum, out var val))
+                    File.WriteAllText($"{defsDir}/{@enum}.proto", val);
+
             Polish(defsDir);
 
             //Console.WriteLine(string.Join(", ", global_imports));
