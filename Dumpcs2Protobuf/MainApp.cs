@@ -86,8 +86,7 @@ namespace DumpFileParser
                     {
                         if (line.StartsWith("public const int "))
                         {
-                            field_nums.Add(line.Replace("public const int ", "").TrimEnd(';').Split('=')[1]);
-                            fn_counter++;
+                            field_nums.Add(line.Replace("public const int ", "").TrimEnd(';').Split('=')[1].Trim());
                         }
                         else if (line.Contains("MapField<"))
                         {
@@ -104,6 +103,7 @@ namespace DumpFileParser
                                 // Constructing the map field declaration for Protocol Buffers
                                 string mapFieldDeclaration = $"\tmap<{keyType}, {valueType}> {variableName} = {field_nums[f_counter].Trim(' ')};";
                                 final.Add(mapFieldDeclaration);
+                                f_counter++;
                             }
                         }
                         else if (line.StartsWith("public") && !line.Contains("const"))
