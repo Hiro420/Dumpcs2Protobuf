@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DumpFileParser
 {
@@ -85,8 +86,25 @@ namespace DumpFileParser
                     {
                         if (line.StartsWith("public const int "))
                         {
-                            field_nums.Add(line.Replace("public const int ", "").TrimEnd(';').Split('=')[1]);
-                            fn_counter++;
+                            field_nums.Add(line.Replace("public const int ", "").TrimEnd(';').Split('=')[1].Trim());
+                        }
+                        else if (line.Contains("MapField<"))
+                        {
+                            string mapFieldPattern = @"MapField<([^,]+),\s*([^>]+)>";
+                            Match mapMatch = Regex.Match(line, mapFieldPattern);
+                            if (mapMatch.Success)
+                            {
+                                string keyType = parseType(mapMatch.Groups[1].Value.Trim(), imports);
+                                string valueType = parseType(mapMatch.Groups[2].Value.Trim(), imports);
+
+                                // Assuming the variable name follows the MapField declaration, extract it
+                                string variableName = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Last().Trim(';');
+
+                                // Constructing the map field declaration for Protocol Buffers
+                                string mapFieldDeclaration = $"\tmap<{keyType}, {valueType}> {variableName} = {field_nums[f_counter].Trim(' ')};";
+                                final.Add(mapFieldDeclaration);
+                                f_counter++;
+                            }
                         }
                         else if (line.StartsWith("public") && !line.Contains("const"))
                         {
@@ -256,5 +274,4 @@ namespace DumpFileParser
             //Console.WriteLine(string.Join(", ", global_imports));
         }
     }
-
 }
