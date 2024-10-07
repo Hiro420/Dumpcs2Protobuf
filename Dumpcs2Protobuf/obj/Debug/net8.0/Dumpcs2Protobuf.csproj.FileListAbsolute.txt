@@ -1,0 +1,16 @@
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/obj/Debug/net8.0/Dumpcs2Protobuf.GeneratedMSBuildEditorConfig.editorconfig
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/obj/Debug/net8.0/Dumpcs2Protobuf.AssemblyInfoInputs.cache
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/obj/Debug/net8.0/Dumpcs2Protobuf.AssemblyInfo.cs
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/obj/Debug/net8.0/Dumpcs2Protobuf.csproj.CoreCompileInputs.cache
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/obj/Debug/net8.0/Dumpcs2Protobuf.sourcelink.json
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/bin/Debug/net8.0/Dumpcs2Protobuf
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/bin/Debug/net8.0/Dumpcs2Protobuf.dll.config
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/bin/Debug/net8.0/Dumpcs2Protobuf.deps.json
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/bin/Debug/net8.0/Dumpcs2Protobuf.runtimeconfig.json
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/bin/Debug/net8.0/Dumpcs2Protobuf.dll
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/bin/Debug/net8.0/Dumpcs2Protobuf.pdb
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/obj/Debug/net8.0/Dumpcs2Protobuf.dll
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/obj/Debug/net8.0/refint/Dumpcs2Protobuf.dll
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/obj/Debug/net8.0/Dumpcs2Protobuf.pdb
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/obj/Debug/net8.0/Dumpcs2Protobuf.genruntimeconfig.cache
+/home/hiro/Documents/GitHub/Dumpcs2Protobuf/Dumpcs2Protobuf/obj/Debug/net8.0/ref/Dumpcs2Protobuf.dll
